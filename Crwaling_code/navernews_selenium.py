@@ -10,15 +10,19 @@ import pandas as pd
 # chromedriver: https://chromedriver.chromium.org/downloads
 
 #####################################
+#####################################
 
 section_id = "102"
-dates = ["20200901"]
+# dates = ["20200901"]
+
+start_date = "2020-08-01"
+end_date = "2020-10-31"
 
 # driver_path = '/home/aiffel0042/Documents/aiffel_local/geckodriver'
 driver_path = '/home/aiffel0042/Documents/aiffel_local/chromedriver'
 
 #####################################
-
+#####################################
 
 def get_list(date, sid, include_desc=True):
     def scrap(url, prev_data):
@@ -116,6 +120,14 @@ def get_list(date, sid, include_desc=True):
     result = scrap(init_url, [])
 
     return result
+
+
+
+dates = []
+
+# https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.date_range.html
+for d in pd.date_range(start=start_date, end=end_date):
+    dates.append(datetime.datetime.strftime(d, "%Y%m%d"))
 
 result = []
 curr_timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
