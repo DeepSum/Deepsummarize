@@ -11,8 +11,8 @@ import pandas as pd
 
 #####################################
 
-section_id = "100"
-dates = ["20200507"]
+section_id = "102"
+dates = ["20200901"]
 
 # driver_path = '/home/aiffel0042/Documents/aiffel_local/geckodriver'
 driver_path = '/home/aiffel0042/Documents/aiffel_local/chromedriver'
@@ -21,17 +21,18 @@ driver_path = '/home/aiffel0042/Documents/aiffel_local/chromedriver'
 
 
 def get_list(date, sid, include_desc=True):
-    def scrap(url):
+    def scrap(url, prev_data):
         print('current URL: ' + url)
 
         driver.get(url)
         parts = driver.find_element_by_id('main_content').find_element_by_class_name('list_body').find_elements_by_tag_name('ul') # .find_elements_by_class_name('type06_headline').find_elements_by_tag_name('li')
 
-        result = []
+        # result = []
+        result = prev_data
 
         for part in parts:
             data = part.find_elements_by_tag_name('li')
-            print(len(data))
+            # print(len(data))
 
             driver2 = webdriver.Chrome(driver_path)
 
@@ -74,6 +75,9 @@ def get_list(date, sid, include_desc=True):
                     if 'entertain.' in curr_response_url:
                         print("entertain is here!!!")
                         continue
+                    elif 'sports.' in curr_response_url:
+                        print("sports is here!!!")
+                        continue
 
                     curr_item['description'] = driver2.find_element_by_id("articleBodyContents").text
                     curr_item['datetime'] = driver2.find_element_by_class_name("article_header").find_element_by_class_name("article_info").find_element_by_class_name("sponsor").find_elements_by_class_name("t11")[0].text
@@ -92,7 +96,7 @@ def get_list(date, sid, include_desc=True):
         print(pages[len(pages) - 1].text)
 
         if not '다음' in pages[len(pages) - 1].text and curr_page > int(pages[len(pages) - 1].text):
-            print("holy shit!~!!!!!!")
+            print("completed.")
             driver.close()
             return result
         else:
@@ -100,7 +104,7 @@ def get_list(date, sid, include_desc=True):
                 next_page = int(page.get_attribute('href').split('page=')[1].split('&')[0])
 
                 if next_page == curr_page + 1:
-                    return scrap(page.get_attribute('href'))
+                    return scrap(page.get_attribute('href'), result)
 
         return result
 
@@ -108,7 +112,9 @@ def get_list(date, sid, include_desc=True):
     # driver = webdriver.Firefox(executable_path=driver_path)
     driver = webdriver.Chrome(driver_path)
 
-    result = scrap(init_url)
+    # result = scrap(init_url)
+    result = scrap(init_url, [])
+
     return result
 
 result = []
